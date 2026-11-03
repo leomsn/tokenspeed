@@ -1,12 +1,12 @@
 #!/bin/zsh
 # 在真实负载下按固定间隔抓 /metrics 的 live 全段，落成 jsonl 对照字段口径。
-# 改取数代码前先跑这个，别照抄 CLAUDE.md 第三节的指标名（指标随服务端版本变）。
+# 改取数代码前先跑这个，别照抄文档里的指标名（指标随服务端版本变，实测为准）。
 # 会打一合成长提示词请求（reading 段只有提示词够长才抓得住），用完即弃。
 #
-#   export STRATA_API_KEY=...   # 见 CLAUDE.md 第五节；脚本不存 key
+#   export STRATA_API_KEY=...   # 脚本不存 key，只读环境变量
 #   tools/probe_metrics.sh [采样次数] [间隔秒]
 set -u
-: "${STRATA_API_KEY:?先 export STRATA_API_KEY（CLAUDE.md 第五节），脚本里不写明文 key}"
+: "${STRATA_API_KEY:?先 export STRATA_API_KEY，脚本里不写明文 key}"
 BASE_URL="${BASE_URL:-http://10.10.1.1:8008}"
 N="${1:-100}"
 INTERVAL="${2:-0.12}"

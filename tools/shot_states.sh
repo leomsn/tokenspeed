@@ -1,10 +1,10 @@
 #!/bin/zsh
 # 三态截图台：跑一个本地构建的 TokenSpeed，打一合成长提示词请求，
-# 每种 live.state 截一张菜单栏浮窗图（首张是空闲），用于肉眼验收 CLAUDE.md 3.3 的三态。
+# 每种 live.state 截一张菜单栏浮窗图（首张是空闲），用于肉眼验收三态显示（忙=数字、空闲=idle、失败=!）。
 # 状态由脚本自己另开一条 curl 判定，与 App 的下一次轮询最多差一个刷新周期，
 # 忙态很短时可能截到 App 仍显示空闲的一帧——某张图里没有浮窗不代表脚本坏了，重跑即可。
 #
-#   export STRATA_API_KEY=...   # 见 CLAUDE.md 第五节；脚本不存 key
+#   export STRATA_API_KEY=...   # 脚本不存 key，只读环境变量
 #   tools/shot_states.sh
 #
 # 注意它会**临时摘掉 launchd 常驻实例**：常驻那个跑的是 .build/release，直接并跑会有两个
@@ -12,7 +12,7 @@
 # 测试实例只按自己的 pid 收尾，不用 pkill -x TokenSpeed。截图区域按当前菜单栏位置写死，
 # 挪了菜单栏就改 REGION。
 set -u
-: "${STRATA_API_KEY:?先 export STRATA_API_KEY（CLAUDE.md 第五节），脚本里不写明文 key}"
+: "${STRATA_API_KEY:?先 export STRATA_API_KEY，脚本里不写明文 key}"
 BASE_URL="${BASE_URL:-http://10.10.1.1:8008}"
 ROOT="$(cd "${0:A:h}/.." && pwd)"
 APP="$ROOT/.build/debug/TokenSpeed"

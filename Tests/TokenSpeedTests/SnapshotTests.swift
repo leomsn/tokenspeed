@@ -1,7 +1,7 @@
 import XCTest
 @testable import TokenSpeed
 
-/// 钉住 CLAUDE.md 第三节的两条硬规则：三态判定（空闲绝不显示 `hardware.tok_s` 的旧值）
+/// 钉住取数的两条硬规则：三态判定（空闲绝不显示 `hardware.tok_s` 的旧值）
 /// 和「`live` 段不许容错」。这两条都是实测踩过血的，改取数代码时必须继续成立。
 final class SnapshotTests: XCTestCase {
 
