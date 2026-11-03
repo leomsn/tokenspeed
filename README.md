@@ -7,6 +7,10 @@ A native menu-bar item — no Dock icon, no browser tab, no terminal TUI. It sho
 one thing well: how fast your local inference server is decoding right now, and
 what it is doing while it does.
 
+Download: <https://github.com/leomsn/tokenspeed/releases/latest> — Apple Silicon,
+macOS 13 or later. The build is ad-hoc signed and not notarized, so the first
+launch needs right-click → Open.
+
 Source: <https://github.com/leomsn/tokenspeed>
 
 ## What you get
