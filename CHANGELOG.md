@@ -5,6 +5,20 @@ All notable changes to TokenSpeed are documented here. The format follows
 [semantic versioning](https://semver.org/). The version string lives in
 `Sources/TokenSpeed/AppInfo.swift`; `tools/make_app.sh` copies it into the bundle.
 
+## 1.0.1 — 2026-11-03
+
+### Fixed
+
+- A failing fetch no longer stays failed forever. `URLSession` carries the
+  "network offline" reachability verdict on its session, so a long-running
+  process could stay in the failure state for hours while `curl` still reached
+  the server. After three consecutive connection failures the client now
+  discards that session and builds a new one, which also closes the connections
+  the failed attempts left behind. Errors where the server answered — a wrong
+  status code or a body we cannot parse — do not count towards that threshold.
+- Changing the server URL or the API key replaces the client; the old session is
+  now invalidated instead of dropped, so its pooled connections are closed.
+
 ## 1.0.0 — 2026-11-02
 
 First public release.

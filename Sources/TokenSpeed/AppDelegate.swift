@@ -57,9 +57,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let url = URL(string: Settings.shared.serverURL) else {
             lastLink = .failed(LF("URL 无效: %1$@", Settings.shared.serverURL))
             publish()
+            client?.shutdown()
             client = nil
             return
         }
+        client?.shutdown()
         client = StrataClient(baseURL: url, apiKey: Settings.shared.apiKey)
     }
 

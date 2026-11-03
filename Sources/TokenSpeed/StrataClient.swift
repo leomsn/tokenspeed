@@ -1,11 +1,18 @@
 import Foundation
 
 final class StrataClient {
-    private let session: URLSession
+    private var session: URLSession
     private let baseURL: URL
     private let apiKey: String?
+    private var transportFailures = 0
 
     init(baseURL: URL, apiKey: String?) {
+        self.session = Self.makeSession()
+        self.baseURL = baseURL
+        self.apiKey = apiKey
+    }
+
+    private static func makeSession() -> URLSession {
         let cfg = URLSessionConfiguration.ephemeral
         cfg.timeoutIntervalForRequest = 3.0
         cfg.timeoutIntervalForResource = 3.0
@@ -13,10 +20,12 @@ final class StrataClient {
         cfg.requestCachePolicy = .reloadIgnoringLocalCacheData
         cfg.urlCache = nil
         cfg.httpAdditionalHeaders = ["Accept": "application/json"]
-        self.session = URLSession(configuration: cfg)
-        self.baseURL = baseURL
-        self.apiKey = apiKey
+        return URLSession(configuration: cfg)
     }
+
+    /// 换地址或换 key 会重建客户端，旧 session 的连接池要当场关掉，
+    /// 否则它的连接会一直挂在进程上。
+    func shutdown() { session.invalidateAndCancel() }
 
     private func makeRequest(path: String) -> URLRequest {
         var req = URLRequest(url: baseURL.appendingPathComponent(path))
@@ -29,13 +38,35 @@ final class StrataClient {
     }
 
     func fetchMetrics() async throws -> MetricsSnapshot {
-        let (data, resp) = try await session.data(for: makeRequest(path: "metrics"))
-        try Self.verify(resp: resp, data: data, expectsKey: apiKey != nil)
         do {
-            return try JSONDecoder().decode(MetricsSnapshot.self, from: data)
-        } catch let e as DecodingError {
-            throw StrataError.decoding(Self.describe(e))
+            let (data, resp) = try await session.data(for: makeRequest(path: "metrics"))
+            try Self.verify(resp: resp, data: data, expectsKey: apiKey != nil)
+            do {
+                let snap = try JSONDecoder().decode(MetricsSnapshot.self, from: data)
+                transportFailures = 0
+                return snap
+            } catch let e as DecodingError {
+                // 服务端答了、只是我们看不懂：这不是"连不上"，不该因此重建 session。
+                transportFailures = 0
+                throw StrataError.decoding(Self.describe(e))
+            }
+        } catch {
+            noteFailure(transport: !(error is StrataError))
+            throw error
         }
+    }
+
+    /// 连不上（超时、拒绝、网络不可达）和"服务端答了但不对"是两类错误，只有前者计数。
+    private func noteFailure(transport: Bool) {
+        transportFailures = transport ? transportFailures + 1 : 0
+        guard transportFailures >= 3 else { return }
+        // URLSession 会把"网络离线"这个可达性判定一直带在 session 上：实测一个常驻进程
+        // 带着它红了 17 小时也不自愈，同时每次失败的连接都不关（当时挂着 28 个 socket）。
+        // 换掉 session 一次解决两件事——`invalidateAndCancel` 关掉旧连接池，新 session 重新问一次可达性。
+        NSLog("[TokenSpeed] 连续 %d 次连不上，重建 URLSession", transportFailures)
+        session.invalidateAndCancel()
+        session = Self.makeSession()
+        transportFailures = 0
     }
 
     private static func describe(_ e: DecodingError) -> String {

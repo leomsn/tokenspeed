@@ -4,7 +4,7 @@ import Foundation
 /// 所以关于窗、Finder「显示简介」和 bundle 里的版本一定是同一个字符串。
 enum AppInfo {
     static let name = "TokenSpeed"
-    static let version = "1.0.0"
+    static let version = "1.0.1"
     static let build = "1"
     static let copyright = "© 2026 TokenSpeed contributors"
 
