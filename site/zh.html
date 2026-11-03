@@ -28,7 +28,8 @@
   <a href="https://github.com/Niko1221/Strata">Strata</a> 服务的数字，外加一个看细节的浮窗
   —— 而在"没有数字可显示"的那些时刻，它会如实告诉你。</p>
   <div class="actions">
-    <a class="primary" href="#install">装起来</a>
+    <a class="primary" href="https://github.com/leomsn/tokenspeed/releases/latest">下载 macOS 版</a>
+    <a href="#install">装起来</a>
     <a href="#states">为什么 <code>idle</code> 不等于 <code>0.0</code></a>
   </div>
 
@@ -94,6 +95,9 @@
   <section id="install">
     <h2>装起来</h2>
     <p>macOS 13 及以上，局域网内一台 Strata 服务，零第三方依赖 —— 只有 SwiftPM + AppKit + SwiftUI。</p>
+    <p>不想编译：最新 <a href="https://github.com/leomsn/tokenspeed/releases/latest">release</a>
+    里挂着打好的 <code>.dmg</code>（只支持 Apple Silicon），打开后把图标拖进「应用程序」。
+    它是 ad-hoc 签名、没有公证，首次启动要右键 → 打开。</p>
 <pre><code>swift build -c release      # 或 swift test，或 zsh tools/make_app.sh
 zsh tools/make_app.sh       # 产出 TokenSpeed.app：LSUIElement、图标、版本号、ad-hoc 签名</code></pre>
     <p>要登录即起、进程被杀自动重拉，就用 LaunchAgent；key 从环境变量进 plist，不进仓库：</p>

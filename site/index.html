@@ -28,7 +28,8 @@
   local <a href="https://github.com/Niko1221/Strata">Strata</a> server, plus a panel for the
   details — and an honest second state for the moments when there is no number to show.</p>
   <div class="actions">
-    <a class="primary" href="#install">Install it</a>
+    <a class="primary" href="https://github.com/leomsn/tokenspeed/releases/latest">Download for macOS</a>
+    <a href="#install">Install it</a>
     <a href="#states">Why <code>idle</code> is not <code>0.0</code></a>
   </div>
 
@@ -101,6 +102,10 @@
     <h2>Install</h2>
     <p>macOS 13 or later, one Strata server reachable over the network, no third-party
     dependencies — SwiftPM plus AppKit and SwiftUI.</p>
+    <p>A prebuilt app for Apple Silicon is on the <a
+    href="https://github.com/leomsn/tokenspeed/releases/latest">latest release</a> as a
+    <code>.dmg</code>: open it and drag the app to Applications. It is ad-hoc signed and not
+    notarized, so the first launch needs right-click → Open.</p>
 <pre><code>swift build -c release      # or: swift test, or: zsh tools/make_app.sh
 zsh tools/make_app.sh       # TokenSpeed.app: LSUIElement, icon, version, ad-hoc signed</code></pre>
     <p>To keep it resident across logins, via a LaunchAgent that takes the key from your
