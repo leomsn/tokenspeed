@@ -1,0 +1,100 @@
+/* TokenSpeed 官网：深色优先（产品本身就活在深色菜单栏里），浅色由 prefers-color-scheme 接管。
+   颜色取自 tools/make_icon.swift 里的实际取值：方块 #292E36、绿 #4DC76B。 */
+:root {
+  --ink: #12161b;
+  --surface: #1e242b;
+  --tile: #292e36;
+  --rule: #39424c;
+  --paper: #e9edf1;
+  --muted: #9aa5b1;
+  --green: #4dc76b;
+  --red: #e4574c;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Noto Sans SC", sans-serif;
+  --pad: clamp(1.25rem, 5vw, 3.5rem);
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --ink: #eef1f4;
+    --surface: #ffffff;
+    --tile: #e2e7ec;
+    --rule: #c8d0d8;
+    --paper: #14191e;
+    --muted: #5b6672;
+    --green: #22743f;
+    --red: #b0362c;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 17px/1.6 var(--sans);
+  letter-spacing: -0.006em;
+}
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+main { max-width: 62rem; margin: 0 auto; padding: 0 var(--pad) 4rem; }
+h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+h1 { font-size: clamp(1.75rem, 4.4vw, 2.9rem); line-height: 1.12; }
+h2 { font-size: 1.22rem; margin-bottom: .5rem; }
+p { margin: 0 0 1rem; max-width: 68ch; }
+.muted { color: var(--muted); }
+
+/* 首屏就是菜单栏本身：状态项长什么样，这里就摆什么 */
+.bar {
+  display: flex; align-items: center; gap: 0;
+  background: var(--tile);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 var(--pad);
+  min-height: 46px;
+  flex-wrap: wrap;
+}
+.bar .brand { font-weight: 600; margin-right: auto; letter-spacing: -0.02em; }
+.state { display: flex; align-items: center; gap: .5rem; font: 500 15px/1 var(--mono); padding: .55rem 1rem; border-left: 1px solid var(--rule); white-space: nowrap; }
+.state:first-of-type { border-left: 0; }
+@media (max-width: 34rem) {
+  /* 375 宽下品牌名和三个状态项挤同一行会换行换得难看：让品牌名独占一行，三个状态项同一行 */
+  .bar .brand { flex: 1 0 100%; margin-right: 0; padding-bottom: .2rem; }
+}
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); flex: none; }
+.dot.ring { background: transparent; border: 2px solid var(--green); }
+.dot.bad { background: var(--red); }
+.state.bad { color: var(--red); }
+
+.lede { font-size: 1.06rem; color: var(--muted); margin: 1.6rem 0 0; }
+.actions { display: flex; gap: 1.25rem; margin: 1.4rem 0 3.25rem; flex-wrap: wrap; }
+.actions a { padding: .5rem .9rem; border: 1px solid var(--rule); border-radius: 4px; text-decoration: none; }
+.actions a.primary { background: var(--green); border-color: var(--green); color: #0d1210; font-weight: 600; }
+@media (prefers-color-scheme: light) { .actions a.primary { color: #fff; } }
+
+section { margin-bottom: 3.25rem; }
+section > h2 { border-top: 1px solid var(--rule); padding-top: 1.1rem; }
+.split { display: grid; gap: 2rem; align-items: start; }
+@media (min-width: 54rem) { .split { grid-template-columns: 1.05fr .95fr; } }
+ul { margin: 0 0 1rem; padding-left: 1.15rem; }
+li { margin-bottom: .4rem; }
+figure { margin: 0; }
+.split figure { max-width: 20rem; margin-inline: auto; }  /* 20rem = 截图原生宽度 320px，别放大糊掉 */
+figure img { width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 6px; }
+figcaption { color: var(--muted); font-size: .85rem; margin-top: .55rem; }
+
+table { border-collapse: collapse; width: 100%; font-size: .96rem; }
+th, td { text-align: left; padding: .6rem .75rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); }
+td.k { font: 500 .95rem/1.4 var(--mono); white-space: nowrap; }
+td.k.bad { color: var(--red); }
+td.k.ok { color: var(--green); }
+
+pre {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+  padding: .85rem 1rem; overflow-x: auto; font: 400 .92rem/1.5 var(--mono);
+}
+code { font: 400 .92em var(--mono); }
+p code, li code { background: var(--surface); padding: .1em .35em; border-radius: 3px; }
+
+footer { border-top: 1px solid var(--rule); padding-top: 1.25rem; color: var(--muted); font-size: .9rem; display: flex; gap: 1.25rem; flex-wrap: wrap; }
+footer nav { margin-left: auto; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

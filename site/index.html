@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TokenSpeed — your local Strata server's decode speed, in the menu bar</title>
+<meta name="description" content="A native macOS menu-bar item that shows how fast your local Strata inference server is decoding right now, and is honest about the states where there is no number to show.">
+<link rel="canonical" href="https://tokenspeed.eroeasy.com/">
+<link rel="icon" href="assets/app-icon.png">
+<meta property="og:title" content="TokenSpeed">
+<meta property="og:description" content="Decode throughput of a local Strata server, permanently in the macOS menu bar.">
+<meta property="og:image" content="https://tokenspeed.eroeasy.com/assets/shot-panel.png">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="bar">
+  <span class="brand">TokenSpeed</span>
+  <span class="state"><span class="dot"></span>219.0t/s</span>
+  <span class="state"><span class="dot"></span>idle</span>
+  <span class="state bad"><span class="dot bad"></span>!</span>
+</header>
+
+<main>
+  <h1>How fast is it decoding right now?</h1>
+  <p class="lede">TokenSpeed keeps that answer in the macOS menu bar: one number from your
+  local <a href="https://github.com/Niko1221/Strata">Strata</a> server, plus a panel for the
+  details — and an honest second state for the moments when there is no number to show.</p>
+  <div class="actions">
+    <a class="primary" href="#install">Install it</a>
+    <a href="#states">Why <code>idle</code> is not <code>0.0</code></a>
+  </div>
+
+  <section id="states">
+    <h2>Three text states, four icon states</h2>
+    <p>The number is the interesting case, but the other two decide whether you trust it.
+    A stale speed shown as a live one is worse than no number at all, so TokenSpeed never
+    does it.</p>
+    <table>
+      <tr><th>State</th><th>Bar shows</th><th>What it means</th></tr>
+      <tr>
+        <td class="k bad">fetch failed</td><td class="k bad">!</td>
+        <td>The server is unreachable, down, or the key was rejected. Go look.</td>
+      </tr>
+      <tr>
+        <td class="k ok">generating</td><td class="k ok">219.0t/s</td>
+        <td>Live decode throughput from <code>live.tok_s</code>, falling back to the last
+        request's value. Capped at <code>999.9</code> so the bar never grows.</td>
+      </tr>
+      <tr>
+        <td class="k">idle</td><td class="k">idle</td>
+        <td>Nothing is being generated. The server still reports its last measured speed —
+        TokenSpeed ignores it rather than passing it off as current.</td>
+      </tr>
+    </table>
+    <p>Every number in the panel carries its source — <code>now</code>, <code>this
+    request</code>, or <code>last request</code> — and decode throughput is never merged with
+    prompt processing or latency. A throughput figure without a source is not a fact.</p>
+  </section>
+
+  <section>
+    <h2>The panel</h2>
+    <div class="split">
+      <div>
+        <p>Click the item for the details you would otherwise curl for:</p>
+        <ul>
+          <li>Model, engine version, context window</li>
+          <li>Request phase bar — reading in blue, generating in green, growing per poll</li>
+          <li>Decode and prefill speed, each with a sparkline of Strata's own history</li>
+          <li>Queue depth and a row per slot, in whatever shape that slot is currently in</li>
+          <li>Last request: decode, prompt, cache reuse</li>
+          <li>Per-GPU utilisation, temperature, power, VRAM; CPU, RAM, lifetime totals</li>
+        </ul>
+        <p>Pick the fields you want in Settings, in English, Simplified or Traditional
+        Chinese. Settings apply without relaunching.</p>
+      </div>
+      <figure>
+        <img src="assets/shot-panel.png" width="320" height="705"
+             alt="The TokenSpeed panel: speed cards, queue row, four slots, GPU and CPU rows.">
+        <figcaption>Sample data from a local test server. Numbers here are not from a real
+        deployment.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Read-only by construction</h2>
+    <p>The client issues two requests: <code>GET /metrics</code> for everything it displays,
+    and <code>GET /health</code> as a key-free liveness check. It never calls an endpoint that
+    changes server state — no <code>/load</code>, no <code>/unload</code>, no
+    <code>/slots/0?action=…</code> — and it does not poll the request-body monitor endpoints.
+    An observer should not be able to change the thing it observes.</p>
+    <p>The API key goes in the settings field (write-only: no path reads it back into the UI)
+    or in the <code>STRATA_API_KEY</code> environment variable. It never reaches a log, the
+    menu bar, or the source; when it appears in an error message it is masked to its first
+    four characters.</p>
+  </section>
+
+  <section id="install">
+    <h2>Install</h2>
+    <p>macOS 13 or later, one Strata server reachable over the network, no third-party
+    dependencies — SwiftPM plus AppKit and SwiftUI.</p>
+<pre><code>swift build -c release      # or: swift test, or: zsh tools/make_app.sh
+zsh tools/make_app.sh       # TokenSpeed.app: LSUIElement, icon, version, ad-hoc signed</code></pre>
+    <p>To keep it resident across logins, via a LaunchAgent that takes the key from your
+    environment instead of the repository:</p>
+<pre><code>export STRATA_API_KEY=&lt;your server key&gt;
+zsh tools/install_launch_agent.sh</code></pre>
+    <p class="muted">Measured cost on an Apple Silicon laptop: about 0.15&nbsp;% CPU idle with
+    the panel closed, 2.4&nbsp;% average while generating with it open. The pulse ring is a
+    Core Animation layer, and every panel subtree sits behind a content fingerprint.</p>
+  </section>
+
+  <footer>
+    <span>MIT licensed</span>
+    <span>© 2026 TokenSpeed contributors</span>
+    <span>Not affiliated with the Strata project</span>
+    <nav><a href="zh.html">简体中文</a></nav>
+  </footer>
+</main>
+</body>
+</html>

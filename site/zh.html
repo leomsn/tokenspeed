@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TokenSpeed —— 把本机 Strata 服务的解码速度钉在菜单栏上</title>
+<meta name="description" content="macOS 原生菜单栏程序：显示局域网内 Strata 推理服务当前的解码 tok/s，并且在没有数字可显示的时候老实告诉你。">
+<link rel="canonical" href="https://tokenspeed.eroeasy.com/zh.html">
+<link rel="icon" href="assets/app-icon.png">
+<meta property="og:title" content="TokenSpeed">
+<meta property="og:description" content="把本机 Strata 服务的解码速度钉在 macOS 菜单栏上。">
+<meta property="og:image" content="https://tokenspeed.eroeasy.com/assets/shot-panel.png">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="bar">
+  <span class="brand">TokenSpeed</span>
+  <span class="state"><span class="dot"></span>219.0t/s</span>
+  <span class="state"><span class="dot"></span>idle</span>
+  <span class="state bad"><span class="dot bad"></span>!</span>
+</header>
+
+<main>
+  <h1>现在解码有多快？</h1>
+  <p class="lede">TokenSpeed 把这个答案常驻在 macOS 菜单栏里：一个来自本机
+  <a href="https://github.com/Niko1221/Strata">Strata</a> 服务的数字，外加一个看细节的浮窗
+  —— 而在"没有数字可显示"的那些时刻，它会如实告诉你。</p>
+  <div class="actions">
+    <a class="primary" href="#install">装起来</a>
+    <a href="#states">为什么 <code>idle</code> 不等于 <code>0.0</code></a>
+  </div>
+
+  <section id="states">
+    <h2>文字三态，图标四态</h2>
+    <p>数字是最有意思的一态，但另外两态决定你信不信它。把上一次测得的旧速度当成现在的速度显示出来，
+    比不显示更坏，所以 TokenSpeed 从不这么干。</p>
+    <table>
+      <tr><th>状态</th><th>栏位显示</th><th>含义</th></tr>
+      <tr>
+        <td class="k bad">取数失败</td><td class="k bad">!</td>
+        <td>服务连不上、没起，或 key 被拒。该去看了。</td>
+      </tr>
+      <tr>
+        <td class="k ok">正在生成</td><td class="k ok">219.0t/s</td>
+        <td>当前解码吞吐，取 <code>live.tok_s</code>，缺就退回最近一条请求的值。
+        封顶 <code>999.9</code>，菜单栏不会被数字撑宽。</td>
+      </tr>
+      <tr>
+        <td class="k">空闲</td><td class="k">idle</td>
+        <td>没有请求在生成。服务端这时仍然上报上一次测得的速度 ——
+        TokenSpeed 把它丢掉，不冒充现值。</td>
+      </tr>
+    </table>
+    <p>浮窗里每个数字都标来源：<code>当前</code>、<code>本次请求</code>、<code>最近请求</code>。
+    解码吞吐、预填充速度、延迟三者永不合并成一个数 —— 没有来源的吞吐数字不是事实。</p>
+  </section>
+
+  <section>
+    <h2>浮窗</h2>
+    <div class="split">
+      <div>
+        <p>点一下图标，就是你本来要 curl 才能拿到的那些东西：</p>
+        <ul>
+          <li>模型、引擎版本、上下文上限</li>
+          <li>请求阶段进度条（reading 蓝、generating 绿，随轮询生长）</li>
+          <li>解码与预填充速度，各带一条 Strata 自己的历史 sparkline</li>
+          <li>队列占用，以及每个槽位当前那种字段形状的一行详情</li>
+          <li>最近一次请求：解码、prompt、缓存复用</li>
+          <li>每张 GPU 的利用率/温度/功耗/显存；CPU、内存、累计计数</li>
+        </ul>
+        <p>要哪些栏位在设置里勾，界面有英语、简中、繁中三种。改完立即生效，不重启进程。</p>
+      </div>
+      <figure>
+        <img src="assets/shot-panel-zh.png" width="320" height="705"
+             alt="TokenSpeed 浮窗：速度卡、队列行、四个槽位、GPU 与 CPU 行。">
+        <figcaption>截图来自本地测试服务的样例数据，里面的数字不是真实部署的读数。</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>结构上就是只读的</h2>
+    <p>客户端只发两种请求：<code>GET /metrics</code> 取全部显示内容，<code>GET /health</code>
+    做不要 key 的存活探测。它不调用任何会改服务端状态的端点 —— 没有 <code>/load</code>、没有
+    <code>/unload</code>、没有 <code>/slots/0?action=…</code> —— 也不轮询存请求体的监控端点。
+    观测工具不该有本事改动被观测的东西。</p>
+    <p>API key 在设置窗口里输入（只写不回显：没有任何代码路径能把已存的 key 读回界面），
+    或者放在 <code>STRATA_API_KEY</code> 环境变量里。它不进日志、不上菜单栏、不硬编进源码；
+    出现在错误提示里时一律先脱敏成前 4 位 + <code>****</code>。</p>
+  </section>
+
+  <section id="install">
+    <h2>装起来</h2>
+    <p>macOS 13 及以上，局域网内一台 Strata 服务，零第三方依赖 —— 只有 SwiftPM + AppKit + SwiftUI。</p>
+<pre><code>swift build -c release      # 或 swift test，或 zsh tools/make_app.sh
+zsh tools/make_app.sh       # 产出 TokenSpeed.app：LSUIElement、图标、版本号、ad-hoc 签名</code></pre>
+    <p>要登录即起、进程被杀自动重拉，就用 LaunchAgent；key 从环境变量进 plist，不进仓库：</p>
+<pre><code>export STRATA_API_KEY=&lt;服务端 key&gt;
+zsh tools/install_launch_agent.sh</code></pre>
+    <p class="muted">在 Apple Silicon 笔记本上实测的开销：空闲 + 浮窗关约 0.15&nbsp;% CPU，
+    生成中 + 浮窗开均值 2.4&nbsp;%。菜单栏脉冲环是 Core Animation 的 layer，浮窗每一块子树都
+    挂在内容指纹后面。</p>
+  </section>
+
+  <footer>
+    <span>MIT 许可证</span>
+    <span>© 2026 TokenSpeed contributors</span>
+    <span>与 Strata 项目无隶属关系</span>
+    <nav><a href="index.html">English</a></nav>
+  </footer>
+</main>
+</body>
+</html>

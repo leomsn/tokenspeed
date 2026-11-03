@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: build + test (macOS)
+    # macos-14 的默认 Xcode 是 15.4（Swift 5.10），连 swift-tools-version:6.0 都解析不了；
+    # macos-15 默认 Xcode 16.4（Swift 6.1）。别退回 14。
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: swift --version
+      - name: Build
+        run: swift build -c release
+      - name: Test
+        run: swift test
+      # The bundle is what users install, so CI has to be able to make it.
+      - name: Package
+        run: |
+          zsh tools/make_app.sh
+          plutil -lint TokenSpeed.app/Contents/Info.plist
