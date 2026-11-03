@@ -98,8 +98,11 @@
     <p>不想编译：最新 <a href="https://github.com/leomsn/tokenspeed/releases/latest">release</a>
     里挂着打好的 <code>.dmg</code>（只支持 Apple Silicon），打开后把图标拖进「应用程序」。
     它是 ad-hoc 签名、没有公证，首次启动要右键 → 打开。</p>
-<pre><code>swift build -c release      # 或 swift test，或 zsh tools/make_app.sh
-zsh tools/make_app.sh       # 产出 TokenSpeed.app：LSUIElement、图标、版本号、ad-hoc 签名</code></pre>
+<pre><code>swift build -c release
+# 或只跑测试：swift test
+zsh tools/make_app.sh    # 打包成 app
+# 产出 TokenSpeed.app
+# LSUIElement、图标、版本号、ad-hoc 签名</code></pre>
     <p>要登录即起、进程被杀自动重拉，就用 LaunchAgent；key 从环境变量进 plist，不进仓库：</p>
 <pre><code>export STRATA_API_KEY=&lt;服务端 key&gt;
 zsh tools/install_launch_agent.sh</code></pre>

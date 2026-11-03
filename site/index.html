@@ -106,11 +106,14 @@
     href="https://github.com/leomsn/tokenspeed/releases/latest">latest release</a> as a
     <code>.dmg</code>: open it and drag the app to Applications. It is ad-hoc signed and not
     notarized, so the first launch needs right-click → Open.</p>
-<pre><code>swift build -c release      # or: swift test, or: zsh tools/make_app.sh
-zsh tools/make_app.sh       # TokenSpeed.app: LSUIElement, icon, version, ad-hoc signed</code></pre>
+<pre><code>swift build -c release
+# or just the tests: swift test
+zsh tools/make_app.sh
+# TokenSpeed.app: LSUIElement, icon
+# version, ad-hoc signed</code></pre>
     <p>To keep it resident across logins, via a LaunchAgent that takes the key from your
     environment instead of the repository:</p>
-<pre><code>export STRATA_API_KEY=&lt;your server key&gt;
+<pre><code>export STRATA_API_KEY=&lt;server key&gt;
 zsh tools/install_launch_agent.sh</code></pre>
     <p class="muted">Measured cost on an Apple Silicon laptop: about 0.15&nbsp;% CPU idle with
     the panel closed, 2.4&nbsp;% average while generating with it open. The pulse ring is a
