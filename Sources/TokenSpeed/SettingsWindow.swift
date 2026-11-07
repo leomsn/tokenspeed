@@ -67,14 +67,14 @@ struct SettingsView: View {
                     }
                 }
 
-                card(L("Strata 服务端")) {
+                card(L("服务端")) {
                     row(L("服务器 URL")) {
                         VStack(alignment: .leading, spacing: 2) {
                             TextField("", text: $serverURL)
                                 .textFieldStyle(.roundedBorder)
                                 .font(.system(size: 12, design: .monospaced))
                                 .onChange(of: serverURL) { _ in verified = false }
-                            Text(L("类型目前仅支持 Strata"))
+                            Text(L("自动识别 Strata / Maya 服务端"))
                                 .font(.system(size: 9.5))
                                 .foregroundColor(Color(nsColor: .tertiaryLabelColor))
                         }

@@ -189,7 +189,7 @@ struct PanelContentView: View, Equatable {
         switch field {
         case .modelVersion:
             if let e = r?.snapshot.engine {
-                h.combine(e.model); h.combine(e.version); h.combine(e.max_context)
+                h.combine(e.model); h.combine(e.version); h.combine(e.maya_version); h.combine(e.max_context)
             }
         case .liveState:
             let l = r?.snapshot.live
@@ -202,7 +202,7 @@ struct PanelContentView: View, Equatable {
             h.combine(speedStamp(r, base: base))   // 渲染在 SpeedCard 里，这里只为占位
         case .queueDepth:
             let l = r?.snapshot.live
-            h.combine(l?.running); h.combine(l?.queued); h.combine(l?.waiting); h.combine(l?.parallel)
+            h.combine(l?.running); h.combine(l?.active); h.combine(l?.queued); h.combine(l?.waiting); h.combine(l?.parallel)
         case .slots:
             for s in r?.snapshot.live.slots ?? [] {
                 h.combine(s.slot); h.combine(s.state); h.combine(s.held_tokens)
@@ -629,9 +629,11 @@ struct PanelFieldRow: View, Equatable {
         switch field {
         case .modelVersion:
             if let e = vm.reading?.snapshot.engine {
+                // Maya 的版本在 maya_version（version 为 null）；Strata 用 version
+                let eng = e.maya_version.map { "Maya \($0)" } ?? (e.version ?? "?")
                 KVLine(label: L("模型"),
                        value: LF("%1$@  ·  引擎 %2$@  ·  ctx %3$@",
-                                 e.model ?? "?", e.version ?? "?", Num.grouped(e.max_context ?? 0)))
+                                 e.model ?? "?", eng, Num.grouped(e.max_context ?? 0)))
             }
         case .liveState:
             if let r = vm.reading {
@@ -641,11 +643,14 @@ struct PanelFieldRow: View, Equatable {
             EmptyView()   // 渲染在 SpeedCard 里
         case .queueDepth:
             if let l = vm.reading?.snapshot.live {
-                KVLine(label: L("队列"),
-                       value: LF("%1$d 运行 · %2$d 排队 · %3$d 等待 / %4$d",
-                                 l.running ?? 0, l.queued ?? 0, l.waiting ?? 0,
-                                 l.parallel ?? 0),
-                       singleLine: true)
+                let run = l.running ?? l.active ?? 0
+                // Maya 不报 parallel（并行容量），那一段不能画成 0，整段省掉
+                let value = l.parallel.map {
+                    LF("%1$d 运行 · %2$d 排队 · %3$d 等待 / %4$d",
+                       run, l.queued ?? 0, l.waiting ?? 0, $0)
+                } ?? LF("%1$d 运行 · %2$d 排队 · %3$d 等待",
+                        run, l.queued ?? 0, l.waiting ?? 0)
+                KVLine(label: L("队列"), value: value, singleLine: true)
             }
         case .slots:
             if let slots = vm.reading?.snapshot.live.slots, !slots.isEmpty {

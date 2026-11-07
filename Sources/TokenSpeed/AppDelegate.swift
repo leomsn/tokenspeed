@@ -89,8 +89,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             let snap = try await client.fetchMetrics()
             let reading = buildReading(from: snap)
-            NSLog("[TokenSpeed] metrics ok state=%@ tok_s=%@ slot0=%@",
+            NSLog("[TokenSpeed] metrics ok state=%@ flavor=%@ tok_s=%@ slot0=%@",
                   snap.live.state,
+                  "\(snap.flavor)",
                   snap.live.tok_s.map { String(format: "%.1f", $0) } ?? "nil",
                   snap.live.slots?.first.map { "\($0.state)/\(slotValue($0))" } ?? "-")
             self.lastLink = .ok

@@ -39,7 +39,7 @@ struct AboutView: View {
             Text(LF("版本 %@", AppInfo.version))
                 .font(.system(size: 11))
                 .foregroundColor(Color(nsColor: .secondaryLabelColor))
-            Text(L("本机菜单栏显示 Strata 的解码速度、队列与硬件占用。"))
+            Text(L("本机菜单栏显示 Strata / Maya 服务端的解码速度、队列与硬件占用。"))
                 .font(.system(size: 11))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)

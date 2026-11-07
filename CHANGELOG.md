@@ -5,6 +5,30 @@ All notable changes to TokenSpeed are documented here. The format follows
 [semantic versioning](https://semver.org/). The version string lives in
 `Sources/TokenSpeed/AppInfo.swift`; `tools/make_app.sh` copies it into the bundle.
 
+## 1.0.2 — 2026-11-07
+
+### Added
+
+- Maya server support. Maya is a Strata variant; TokenSpeed auto-detects the
+  flavor from the `engine.maya_version` marker in `/metrics` and treats every
+  server without that marker as Strata, so existing setups behave exactly as
+  before. The model line shows the engine as `Maya x.y.z`.
+- Panel parity on Maya: decode/prefill speed with sparklines, the busy-state
+  progress bar, last request, per-GPU utilisation/temperature/power/VRAM, CPU,
+  RAM and lifetime totals all read the Maya fields. The queue line maps Maya's
+  `active` to running and omits the parallel-capacity figure the variant does
+  not report; the Slots card hides when the server sends no slots. Idle prefill
+  prefers Maya's direct per-request `prefill_tok_s` over deriving it from
+  `prompt_ms`.
+
+### Fixed
+
+- On Maya, whole sections used to vanish silently: `requests[]` entries there
+  carry no `id` and `hardware.gpus[]` carries no `name`, and both fields were
+  mandatory in the decoder. They are optional now; before this, a Maya server
+  showed no GPU/CPU/RAM data and no last-request card at all.
+- `/health` now understands Maya's `unloaded` boolean (the inverse of `loaded`).
+
 ## 1.0.1 — 2026-11-03
 
 ### Fixed

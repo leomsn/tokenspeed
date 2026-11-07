@@ -94,13 +94,14 @@ final class StrataClient {
             let max_context: Int?
             let api_key: Bool?
             let loaded: Bool?
+            let unloaded: Bool?   // Maya 反着报 unloaded；Strata 直接给 loaded
         }
         let h = try JSONDecoder().decode(H.self, from: data)
         return .ok(
             model: h.model ?? "?",
             maxContext: h.max_context ?? 0,
             keyRequired: h.api_key ?? false,
-            loaded: h.loaded ?? false
+            loaded: h.loaded ?? (h.unloaded == false)
         )
     }
 

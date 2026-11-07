@@ -91,9 +91,9 @@ enum Strings {
         // 关于窗
         "关于 TokenSpeed": ["en": "About TokenSpeed", "zhHant": "關於 TokenSpeed"],
         "版本 %@": ["en": "Version %@", "zhHant": "版本 %@"],
-        "本机菜单栏显示 Strata 的解码速度、队列与硬件占用。": [
-            "en": "Shows your local Strata server's decode speed, queue and hardware usage in the menu bar.",
-            "zhHant": "本機選單列顯示 Strata 的解碼速度、佇列與硬體占用。",
+        "本机菜单栏显示 Strata / Maya 服务端的解码速度、队列与硬件占用。": [
+            "en": "Shows your local Strata or Maya server's decode speed, queue and hardware usage in the menu bar.",
+            "zhHant": "本機選單列顯示 Strata / Maya 伺服器的解碼速度、佇列與硬體占用。",
         ],
         "开源许可": ["en": "License", "zhHant": "授權條款"],
         "MIT 许可证": ["en": "MIT License", "zhHant": "MIT 授權條款"],
@@ -103,11 +103,11 @@ enum Strings {
         "通用": ["en": "General", "zhHant": "一般"],
         "跟随系统": ["en": "Follow System", "zhHant": "跟隨系統"],
         "语言": ["en": "Language", "zhHant": "語言"],
-        "Strata 服务端": ["en": "Strata Server", "zhHant": "Strata 伺服器"],
+        "服务端": ["en": "Server", "zhHant": "伺服器"],
         "服务器 URL": ["en": "Server URL", "zhHant": "伺服器 URL"],
-        "类型目前仅支持 Strata": [
-            "en": "Only Strata servers are supported for now",
-            "zhHant": "類型目前僅支援 Strata",
+        "自动识别 Strata / Maya 服务端": [
+            "en": "Auto-detects a Strata or Maya server",
+            "zhHant": "自動識別 Strata / Maya 伺服器",
         ],
         "未设置（菜单栏会显示 ! ）": [
             "en": "Not set (menu bar shows ! )",
@@ -199,6 +199,10 @@ enum Strings {
         "%1$d 运行 · %2$d 排队 · %3$d 等待 / %4$d": [
             "en": "%1$d running · %2$d queued · %3$d waiting / %4$d",
             "zhHant": "%1$d 運行 · %2$d 排隊 · %3$d 等待 / %4$d",
+        ],
+        "%1$d 运行 · %2$d 排队 · %3$d 等待": [
+            "en": "%1$d running · %2$d queued · %3$d waiting",
+            "zhHant": "%1$d 運行 · %2$d 排隊 · %3$d 等待",
         ],
         "最近请求": ["en": "Last request", "zhHant": "最近請求"],
         "温度": ["en": "Temp", "zhHant": "溫度"],

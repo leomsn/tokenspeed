@@ -19,6 +19,7 @@ struct LiveState: Decodable {
     let state: String
     let queued: Int?
     let running: Int?
+    let active: Int?   // Maya 用 active 报运行数（Strata 是 running），二选一总有值
     let waiting: Int?
     let admitting: Int?
     let parallel: Int?
@@ -39,7 +40,7 @@ struct LiveState: Decodable {
 
 struct GPUInfo: Decodable, Identifiable {
     let index: Int
-    let name: String
+    let name: String?   // Maya 的 gpus[] 不带 name；非可空会让整段 hardware 静默丢掉
     let util: Double?
     let mem_used: Double?
     let mem_total: Double?
@@ -73,19 +74,21 @@ struct Hardware: Decodable {
 struct EngineInfo: Decodable {
     let model: String?
     let version: String?
+    let maya_version: String?
     let max_context: Int?
     let kv: String?
     let drafting: String?
     let batch_slots: Int?
 
     init() {
-        model = nil; version = nil; max_context = nil
+        model = nil; version = nil; maya_version = nil; max_context = nil
         kv = nil; drafting = nil; batch_slots = nil
     }
 }
 
 struct RequestEntry: Decodable, Identifiable {
-    let id: String
+    // Maya 的 requests[] 不带 id；Optional 才能让单条记录照常解出来
+    let id: String?
     let time: Double
     let duration_s: Double?
     let finish: String?
@@ -96,6 +99,7 @@ struct RequestEntry: Decodable, Identifiable {
     let prompt_ms: Double?
     let decode_ms: Double?
     let decode_tok_s: Double?
+    let prefill_tok_s: Double?
     let hit_rate: Double?
     let drafts_offered: Int?
     let drafts_accepted: Int?
@@ -121,6 +125,14 @@ struct History: Decodable {
     }
 }
 
+/// 服务端风味。Maya 是 Strata 的变体，靠 `engine.maya_version` 正向识别——
+/// Maya 自己报上的名字，Strata 没有这个键。识别不到一律按 Strata 走：
+/// 绝不靠"缺了哪个字段"反推，缺字段可能只是版本差异，这样旧服务端行为一个字节都不变。
+enum ServerFlavor: Equatable {
+    case strata
+    case maya
+}
+
 struct MetricsSnapshot: Decodable {
     let live: LiveState
     let hardware: Hardware
@@ -129,6 +141,7 @@ struct MetricsSnapshot: Decodable {
     let history: History
     let requests: [RequestEntry]
     let time: Double
+    let flavor: ServerFlavor
 
     enum CodingKeys: String, CodingKey {
         case live, hardware, engine, totals, history, requests, time
@@ -144,6 +157,7 @@ struct MetricsSnapshot: Decodable {
         self.live = try c.decode(LiveState.self, forKey: .live)
         self.hardware = (try? c.decode(Hardware.self, forKey: .hardware)) ?? Hardware()
         self.engine = (try? c.decode(EngineInfo.self, forKey: .engine)) ?? EngineInfo()
+        self.flavor = (self.engine.maya_version?.isEmpty == false) ? .maya : .strata
         self.totals = try? c.decode(Totals.self, forKey: .totals)
         self.history = (try? c.decode(History.self, forKey: .history)) ?? History()
         self.time = (try? c.decode(Double.self, forKey: .time)) ?? 0
@@ -261,11 +275,15 @@ func buildReading(from snapshot: MetricsSnapshot) -> Reading {
     var prefill: SpeedMetric? = nil
     if !isIdle, let v = live.prefill_tok_s_mean, v > 0 {
         prefill = SpeedMetric(value: v, source: live.state == "reading" ? .now : .thisRequest)
-    } else if isIdle,
-              let p = last?.prompt_tokens, let ms = last?.prompt_ms, ms > 0 {
-        let fresh = Double(max(0, p - (last?.reused ?? 0)))
-        let v = fresh / (ms / 1000)
-        if v > 0 { prefill = SpeedMetric(value: v, source: .lastRequest) }
+    } else if isIdle {
+        // Maya 直接给每条请求的 prefill_tok_s，有就优先用它，不必再从 prompt_ms 反推
+        if let v = last?.prefill_tok_s, v > 0 {
+            prefill = SpeedMetric(value: v, source: .lastRequest)
+        } else if let p = last?.prompt_tokens, let ms = last?.prompt_ms, ms > 0 {
+            let fresh = Double(max(0, p - (last?.reused ?? 0)))
+            let v = fresh / (ms / 1000)
+            if v > 0 { prefill = SpeedMetric(value: v, source: .lastRequest) }
+        }
     }
 
     // 菜单栏：空闲不显示速度，忙时优先当前瞬时值
