@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TokenSpeed —— 把本机 Strata 服务的解码速度钉在菜单栏上</title>
-<meta name="description" content="macOS 原生菜单栏程序：显示局域网内 Strata 推理服务当前的解码 tok/s，并且在没有数字可显示的时候老实告诉你。">
+<title>TokenSpeed —— 把本机 Strata / Maya 服务的解码速度钉在菜单栏上</title>
+<meta name="description" content="macOS 原生菜单栏程序：显示局域网内 Strata 或 Maya 推理服务当前的解码 tok/s，并且在没有数字可显示的时候老实告诉你。">
 <link rel="canonical" href="https://tokenspeed.eroeasy.com/zh.html">
 <link rel="icon" href="assets/app-icon.png">
 <meta property="og:title" content="TokenSpeed">
-<meta property="og:description" content="把本机 Strata 服务的解码速度钉在 macOS 菜单栏上。">
+<meta property="og:description" content="把本机 Strata / Maya 服务的解码速度钉在 macOS 菜单栏上。">
 <meta property="og:image" content="https://tokenspeed.eroeasy.com/assets/shot-panel.png">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="assets/styles.css">
@@ -25,8 +25,8 @@
 <main>
   <h1>现在解码有多快？</h1>
   <p class="lede">TokenSpeed 把这个答案常驻在 macOS 菜单栏里：一个来自本机
-  <a href="https://github.com/Niko1221/Strata">Strata</a> 服务的数字，外加一个看细节的浮窗
-  —— 而在"没有数字可显示"的那些时刻，它会如实告诉你。</p>
+  <a href="https://github.com/Niko1221/Strata">Strata</a> 或 Maya 服务的数字（风味自动识别），
+  外加一个看细节的浮窗 —— 而在"没有数字可显示"的那些时刻，它会如实告诉你。</p>
   <div class="actions">
     <a class="primary" href="https://github.com/leomsn/tokenspeed/releases/latest">下载 macOS 版</a>
     <a href="#install">装起来</a>
@@ -50,7 +50,7 @@
       </tr>
       <tr>
         <td class="k">空闲</td><td class="k">idle</td>
-        <td>没有请求在生成。服务端这时仍然上报上一次测得的速度 ——
+        <td>没有请求在生成。服务端这时可能仍上报上一次测得的速度 ——
         TokenSpeed 把它丢掉，不冒充现值。</td>
       </tr>
     </table>
@@ -66,8 +66,8 @@
         <ul>
           <li>模型、引擎版本、上下文上限</li>
           <li>请求阶段进度条（reading 蓝、generating 绿，随轮询生长）</li>
-          <li>解码与预填充速度，各带一条 Strata 自己的历史 sparkline</li>
-          <li>队列占用，以及每个槽位当前那种字段形状的一行详情</li>
+          <li>解码与预填充速度，各带一条服务端自己的历史 sparkline</li>
+          <li>队列占用；服务端报槽位时，再给每个槽位一行当前字段形状的详情</li>
           <li>最近一次请求：解码、prompt、缓存复用</li>
           <li>每张 GPU 的利用率/温度/功耗/显存；CPU、内存、累计计数</li>
         </ul>
@@ -94,7 +94,7 @@
 
   <section id="install">
     <h2>装起来</h2>
-    <p>macOS 13 及以上，局域网内一台 Strata 服务，零第三方依赖 —— 只有 SwiftPM + AppKit + SwiftUI。</p>
+    <p>macOS 13 及以上，局域网内一台 Strata 或 Maya 服务，零第三方依赖 —— 只有 SwiftPM + AppKit + SwiftUI。</p>
     <p>不想编译：最新 <a href="https://github.com/leomsn/tokenspeed/releases/latest">release</a>
     里挂着打好的 <code>.dmg</code>（只支持 Apple Silicon），打开后把图标拖进「应用程序」。
     它是 ad-hoc 签名、没有公证，首次启动要右键 → 打开。</p>

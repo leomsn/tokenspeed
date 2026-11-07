@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TokenSpeed — your local Strata server's decode speed, in the menu bar</title>
-<meta name="description" content="A native macOS menu-bar item that shows how fast your local Strata inference server is decoding right now, and is honest about the states where there is no number to show.">
+<title>TokenSpeed — your local Strata or Maya server's decode speed, in the menu bar</title>
+<meta name="description" content="A native macOS menu-bar item that shows how fast your local Strata or Maya inference server is decoding right now, and is honest about the states where there is no number to show.">
 <link rel="canonical" href="https://tokenspeed.eroeasy.com/">
 <link rel="icon" href="assets/app-icon.png">
 <meta property="og:title" content="TokenSpeed">
-<meta property="og:description" content="Decode throughput of a local Strata server, permanently in the macOS menu bar.">
+<meta property="og:description" content="Decode throughput of a local Strata or Maya server, permanently in the macOS menu bar.">
 <meta property="og:image" content="https://tokenspeed.eroeasy.com/assets/shot-panel.png">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="assets/styles.css">
@@ -25,8 +25,9 @@
 <main>
   <h1>How fast is it decoding right now?</h1>
   <p class="lede">TokenSpeed keeps that answer in the macOS menu bar: one number from your
-  local <a href="https://github.com/Niko1221/Strata">Strata</a> server, plus a panel for the
-  details — and an honest second state for the moments when there is no number to show.</p>
+  local <a href="https://github.com/Niko1221/Strata">Strata</a> or Maya server — the flavor
+  is auto-detected — plus a panel for the details, and an honest second state for the
+  moments when there is no number to show.</p>
   <div class="actions">
     <a class="primary" href="https://github.com/leomsn/tokenspeed/releases/latest">Download for macOS</a>
     <a href="#install">Install it</a>
@@ -51,7 +52,7 @@
       </tr>
       <tr>
         <td class="k">idle</td><td class="k">idle</td>
-        <td>Nothing is being generated. The server still reports its last measured speed —
+        <td>Nothing is being generated. A server may still report its last measured speed —
         TokenSpeed ignores it rather than passing it off as current.</td>
       </tr>
     </table>
@@ -68,8 +69,9 @@
         <ul>
           <li>Model, engine version, context window</li>
           <li>Request phase bar — reading in blue, generating in green, growing per poll</li>
-          <li>Decode and prefill speed, each with a sparkline of Strata's own history</li>
-          <li>Queue depth and a row per slot, in whatever shape that slot is currently in</li>
+          <li>Decode and prefill speed, each with a sparkline of the server's own history</li>
+          <li>Queue depth and — when the server sends slots — a row per slot, in whatever
+          shape that slot is currently in</li>
           <li>Last request: decode, prompt, cache reuse</li>
           <li>Per-GPU utilisation, temperature, power, VRAM; CPU, RAM, lifetime totals</li>
         </ul>
@@ -100,8 +102,8 @@
 
   <section id="install">
     <h2>Install</h2>
-    <p>macOS 13 or later, one Strata server reachable over the network, no third-party
-    dependencies — SwiftPM plus AppKit and SwiftUI.</p>
+    <p>macOS 13 or later, one Strata or Maya server reachable over the network, no
+    third-party dependencies — SwiftPM plus AppKit and SwiftUI.</p>
     <p>A prebuilt app for Apple Silicon is on the <a
     href="https://github.com/leomsn/tokenspeed/releases/latest">latest release</a> as a
     <code>.dmg</code>: open it and drag the app to Applications. It is ad-hoc signed and not
